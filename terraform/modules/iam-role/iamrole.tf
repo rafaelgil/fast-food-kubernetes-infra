@@ -10,7 +10,7 @@ resource "aws_iam_role" "cluster_iam_role" {
         Service = "eks.amazonaws.com"
       }
     }]
-    Version = "2023-10-17"
+    Version = "2012-10-17"
   })
 }
 
@@ -26,7 +26,7 @@ resource "aws_iam_role" "nodegroup_iam_role" {
         Service = "ec2.amazonaws.com"
       }
     }]
-    Version = "2023-10-17"
+    Version = "2012-10-17"
   })
 }
 
