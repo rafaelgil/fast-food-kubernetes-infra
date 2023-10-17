@@ -56,14 +56,14 @@ jobs:
 
     - name: Check for Changes in Terraform Plan
       id: plan_changes
-      run: echo "::set-output name=changed::$(terraform show -json tfplan | jq '.resource_changes | length > 0')"
+      run: echo "::name=changed::$(terraform show -json tfplan | jq '.resource_changes | length > 0')" >> $GITHUB_OUTPUT
 
     - name: Terraform Apply
       run: terraform apply -var-file=../environments/dev/iam.tfvars -auto-approve
 
     - name: Store Outputs
       id: terraform_outputs
-      run: echo "::set-output name=outputs::$(terraform output -json)"
+      run: echo "::name=outputs::$(terraform output -json)" >> $GITHUB_OUTPUT
 
     - name: Terraform Plan Status
       if: steps.plan.outcome == 'failure'
