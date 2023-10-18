@@ -2,7 +2,7 @@ aws_region = "us-east-1"
 
 eks_nodegroup_list = [
   {
-    name           = "fast-food-dev-eksdemo1-eks-ng-public"
+    name           = "finance-dev-eksdemo1-eks-ng-public"
     is_private     = false
     ami_type       = "AL2_x86_64"
     capacity_type  = "ON_DEMAND"
@@ -21,7 +21,7 @@ eks_nodegroup_list = [
     }
   },
   {
-    name           = "fast-food-dev-eksdemo1-eks-ng-private"
+    name           = "finance-dev-eksdemo1-eks-ng-private"
     is_private     = true
     ami_type       = "AL2_x86_64"
     capacity_type  = "ON_DEMAND"

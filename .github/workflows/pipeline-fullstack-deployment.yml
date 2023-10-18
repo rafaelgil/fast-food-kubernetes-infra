@@ -1,4 +1,4 @@
-name: EKS-With-Terraform Deployment Delete
+name: EKS-With-Terraform Infrastructure Deployment
 
 # on:
 #   push:
@@ -12,12 +12,10 @@ env:
  # Credentials for deployment to AWS
  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
- # S3 bucket for the Terraform state
- BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE }} 
 
 jobs:
-  delete_iam_stack:
-    name: "Delete IAM Stack"
+  iam_deployment:
+    name: "Deploy IAM"
     runs-on: ubuntu-latest
     defaults:
      run:
@@ -26,10 +24,10 @@ jobs:
     
     steps:
     - name: Checkout the repository to the runner
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v3
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -56,15 +54,28 @@ jobs:
 
     - name: Terraform Plan
       id: plan
-      run: terraform plan -input=false -out=tfplan -destroy
-      continue-on-error: true   
-
-    - name: Terraform Destroy
-      id: destroy
-      run: terraform destroy --auto-approve -no-color -input=false
+      run: terraform plan -var-file=../environments/dev/iam.tfvars -input=false -out=tfplan
       continue-on-error: true
-  delete_network_stack:
-    name: "Delete Network Stack"
+
+    - name: Check for Changes in Terraform Plan
+      id: plan_changes
+      run: echo "::set-output name=changed::$(terraform show -json tfplan | jq '.resource_changes | length > 0')"
+
+    - name: Terraform Apply
+      run: terraform apply -var-file=../environments/dev/iam.tfvars -auto-approve
+
+    - name: Store Outputs
+      id: terraform_outputs
+      run: echo "::set-output name=outputs::$(terraform output -json)"
+
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
+
+    - name: Clean up
+      run: rm -f tfplan
+  network_deployment:
+    name: "Deploy Network"
     runs-on: ubuntu-latest
     defaults:
      run:
@@ -73,10 +84,10 @@ jobs:
     
     steps:
     - name: Checkout the repository to the runner
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v3
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -101,7 +112,25 @@ jobs:
     - name: Terraform Validate
       run: terraform validate
 
-    - name: Terraform Destroy
-      id: destroy
-      run: terraform destroy -var-file=../../environments/dev/deploy-network.tfvars --auto-approve -no-color -input=false
+    - name: Terraform Plan
+      id: plan
+      run: terraform plan -var-file=../../environments/dev/deploy-network.tfvars -input=false -out=tfplan
       continue-on-error: true 
+
+    - name: Check for Changes in Terraform Plan
+      id: plan_changes
+      run: echo "::set-output name=changed::$(terraform show -json tfplan | jq '.resource_changes | length > 0')"
+
+    - name: Terraform Apply
+      run: terraform apply -var-file=../../environments/dev/deploy-network.tfvars -auto-approve
+
+    - name: Store Outputs
+      id: terraform_outputs
+      run: echo "::set-output name=outputs::$(terraform output -json)"
+
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
+
+    - name: Clean up
+      run: rm -f tfplan
