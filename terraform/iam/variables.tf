@@ -5,18 +5,13 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "cluster_roles" {
-  description = "Cluster Admin Roles"
-  type = list(object({
-    role_name   = string,
-    policy_list = list(string)
-  }))
-}
+data "aws_iam_policy_document" "ecs_agent" {
+  statement {
+    actions = ["sts:AssumeRole"]
 
-variable "nodegroup_roles" {
-  description = "Cluster Admin Roles"
-  type = list(object({
-    role_name   = string,
-    policy_list = list(string)
-  }))
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
 }
