@@ -1,5 +1,3 @@
-aws_region = "us-east-1"
-
 resource "aws_iam_role" "ecs_agent" {
   name               = "ecs-agent"
   assume_role_policy = data.aws_iam_policy_document.ecs_agent.json
