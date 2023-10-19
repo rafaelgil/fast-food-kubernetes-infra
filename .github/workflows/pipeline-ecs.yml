@@ -15,12 +15,12 @@ env:
 
 jobs:
   iam_deployment:
-    name: "Deploy IAM"
+    name: "Deploy VPC"
     runs-on: ubuntu-latest
     defaults:
      run:
        shell: bash       
-       working-directory: ./terraform/iam
+       working-directory: ./terraform_ecs
     
     steps:
     - name: Checkout the repository to the runner
@@ -54,7 +54,7 @@ jobs:
 
     - name: Terraform Plan
       id: plan
-      run: terraform plan -var-file=iam.tfvars -input=false -out=tfplan
+      run: terraform plan -var-file=terraform.tfvars -input=false -out=tfplan
       continue-on-error: true
 
     - name: Check for Changes in Terraform Plan
@@ -62,7 +62,7 @@ jobs:
       run: echo "::set-output name=changed::$(terraform show -json tfplan | jq '.resource_changes | length > 0')"
 
     - name: Terraform Apply
-      run: terraform apply -var-file=iam.tfvars -auto-approve
+      run: terraform apply tfplan -auto-approve
 
     - name: Store Outputs
       id: terraform_outputs

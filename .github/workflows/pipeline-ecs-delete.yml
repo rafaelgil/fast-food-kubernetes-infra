@@ -12,17 +12,15 @@ env:
  # Credentials for deployment to AWS
  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
- # S3 bucket for the Terraform state
- BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE }} 
 
 jobs:
-  delete_iam_stack:
-    name: "Delete IAM Stack"
+  iam_deployment:
+    name: "Deploy VPC"
     runs-on: ubuntu-latest
     defaults:
      run:
        shell: bash       
-       working-directory: ./terraform/iam
+       working-directory: ./terraform_ecs
     
     steps:
     - name: Checkout the repository to the runner
@@ -56,7 +54,7 @@ jobs:
 
     - name: Terraform Plan
       id: plan
-      run: terraform plan -var-file=iam.tfvars -input=false -out=tfplan
+      run: terraform plan -var-file=terraform.tfvars -input=false -out=tfplan
       continue-on-error: true
 
     - name: Check for Changes in Terraform Plan
@@ -64,7 +62,7 @@ jobs:
       run: echo "::set-output name=changed::$(terraform show -json tfplan | jq '.resource_changes | length > 0')"
 
     - name: Terraform Destroy
-      run: terraform destroy -var-file=iam.tfvars -auto-approve
+      run: terraform destroy tfplan -auto-approve
 
     - name: Store Outputs
       id: terraform_outputs
