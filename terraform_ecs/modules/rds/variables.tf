@@ -3,7 +3,7 @@ variable "environment" {
 }
 
 variable "subnet_ids" {
-  type        = bool
+  type        = list(string)
   description = "Subnet ids"
 }
 
