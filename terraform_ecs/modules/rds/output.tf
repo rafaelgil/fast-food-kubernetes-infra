@@ -1,19 +1,7 @@
-output "vpc_id" {
-  value = aws_vpc.vpc.id
+output "rds_address" {
+  value = aws_db_instance.rds.address
 }
 
-output "public_subnets_id" {
-  value = [aws_subnet.public_subnet.*.id]
-}
-
-output "private_subnets_id" {
-  value = [aws_subnet.private_subnet.*.id]
-}
-
-output "default_sg_id" {
-  value = aws_security_group.default.id
-}
-
-output "security_groups_ids" {
-  value = [aws_security_group.default.id]
+output "db_access_sg_id" {
+  value = aws_security_group.db_access_sg.id
 }

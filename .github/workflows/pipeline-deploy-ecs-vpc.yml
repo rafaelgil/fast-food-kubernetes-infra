@@ -20,7 +20,7 @@ jobs:
     defaults:
      run:
        shell: bash
-       working-directory: ./terraform_ecs/vpc
+       working-directory: ./terraform_ecs
     
     steps:
     - name: Checkout the repository to the runner
