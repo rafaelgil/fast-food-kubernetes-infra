@@ -1,0 +1,57 @@
+name: ECS with terraform infrastructure delete
+
+# on:
+#   push:
+#     branches:
+#       - main
+on: workflow_dispatch
+
+env:
+ # verbosity setting for Terraform logs--test
+ TF_LOG: INFO
+ # Credentials for deployment to AWS
+ aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+ aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+jobs:
+  iam_deployment:
+    name: "Deploy VPC"
+    runs-on: ubuntu-latest
+    defaults:
+     run:
+       shell: bash
+       working-directory: ./terraform_ecs/vpc
+    
+    steps:
+    - name: Checkout the repository to the runner
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Test configuration of AWS CLI
+      run: |
+        aws --version
+        aws configure list | grep region | awk '{print $2}'
+
+    - name: Setup Terraform with specified version on the runner
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.5
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Format Check
+      run: terraform fmt -check=true
+
+    - name: Terraform Validate
+      run: terraform validate
+
+    - name: Terraform Destroy
+      id: destroy
+      run: terraform apply -var-file=terraform.tfvars -destroy -auto-approve -no-color -input=false
