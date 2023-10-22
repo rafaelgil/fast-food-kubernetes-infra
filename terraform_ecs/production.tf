@@ -9,11 +9,6 @@ provider "aws" {
   region = var.region
 }
 
-resource "aws_key_pair" "key" {
-  key_name   = "production_key"
-  public_key = file("production_key.pub")
-}
-
 module "networking" {
   source               = "./modules/networking"
   environment          = "production"
