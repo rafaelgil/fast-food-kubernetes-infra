@@ -3,7 +3,7 @@ variable "environment" {
 }
 
 variable "subnet_ids" {
-  type        = list(string)
+  type        = tuple([string])
   description = "Subnet ids"
 }
 
