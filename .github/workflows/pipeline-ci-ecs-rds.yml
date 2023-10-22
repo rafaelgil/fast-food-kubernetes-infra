@@ -1,4 +1,4 @@
-name: ECS with terraform CI
+name: ECS with terraform CI RDS
 
 # on:
 #   push:
