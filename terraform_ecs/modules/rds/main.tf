@@ -6,7 +6,7 @@ RDS
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name        = "${var.environment}-rds-subnet-group"
   description = "RDS subnet group"
-  subnet_ids  = [var.subnet_ids]
+  subnet_ids  = var.subnet_ids
   tags = {
     Environment = var.environment
   }
