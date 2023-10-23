@@ -6,7 +6,7 @@ RDS
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name        = "${var.environment}-rds-subnet-group"
   description = "RDS subnet group"
-  subnet_ids  = var.subnet_ids
+  subnet_ids  = [var.subnet_ids]
   tags = {
     Environment = var.environment
   }
@@ -62,7 +62,7 @@ resource "aws_db_instance" "rds" {
   identifier             = "${var.environment}-database"
   allocated_storage      = var.allocated_storage
   engine                 = "postgres"
-  engine_version         = "9.6.6"
+  engine_version         = "13.4"
   instance_class         = var.instance_class
   multi_az               = var.multi_az
   db_name                = var.database_name
