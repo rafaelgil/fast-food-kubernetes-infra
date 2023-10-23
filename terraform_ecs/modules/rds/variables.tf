@@ -5,6 +5,7 @@ variable "environment" {
 variable "subnet_ids" {
   type        = list(string)
   description = "Subnet ids"
+  default     = []
 }
 
 variable "vpc_id" {
