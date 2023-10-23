@@ -62,16 +62,15 @@ resource "aws_db_instance" "rds" {
   identifier             = "${var.environment}-database"
   allocated_storage      = var.allocated_storage
   engine                 = "postgres"
-  engine_version         = "13.4"
+  engine_version         = "14"
   instance_class         = var.instance_class
   multi_az               = var.multi_az
-  db_name                = var.database_name
-  username               = var.database_username
-  password               = var.database_password
+  db_name                = "food"
+  username               = "postgres"
+  password               = "Postgres2023"
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.id
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   skip_final_snapshot    = true
-  snapshot_identifier    = "rds-${var.environment}-snapshot"
   tags = {
     Environment = var.environment
   }

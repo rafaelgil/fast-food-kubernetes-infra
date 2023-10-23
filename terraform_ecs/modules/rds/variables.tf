@@ -30,12 +30,15 @@ variable "multi_az" {
 
 variable "database_name" {
   description = "The database name"
+  default = "food"
 }
 
 variable "database_username" {
   description = "The username of the database"
+  default = "postgres"
 }
 
 variable "database_password" {
   description = "The password of the database"
+  default = "Postgres2023"
 }
