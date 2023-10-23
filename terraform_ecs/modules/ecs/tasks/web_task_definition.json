@@ -4,8 +4,8 @@
     "image": "${image}",
     "portMappings": [
       {
-        "containerPort": 80,
-        "hostPort": 80
+        "containerPort": 8080,
+        "hostPort": 8080
       }
     ],
     "memory": 300,
@@ -20,28 +20,16 @@
     },
     "environment": [
       {
-        "name": "RAILS_ENV",
-        "value": "production"
-      },
-      {
         "name": "DATABASE_URL",
         "value": "${database_url}"
       },
       {
-        "name": "SECRET_KEY_BASE",
-        "value": "${secret_key_base}"
+        "name": "DATABASE_URL",
+        "value": "${database_user}"
       },
       {
-        "name": "PORT",
-        "value": "80"
-      },
-      {
-        "name": "RAILS_LOG_TO_STDOUT",
-        "value": "true"
-      },
-      {
-        "name": "RAILS_SERVE_STATIC_FILES",
-        "value": "true"
+        "name": "DATABASE_PASSWORD",
+        "value": "${database_password}"
       }
     ]
   }

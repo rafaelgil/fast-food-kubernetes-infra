@@ -28,7 +28,7 @@ variable "public_subnet_ids" {
 
 variable "repository_name" {
   description = "repository name"
-  default = "fast-food"
+  default = "372431383879.dkr.ecr.us-east-1.amazonaws.com/fast-food:latest"
 }
 
 variable "database_endpoint" {
