@@ -7,28 +7,24 @@ variable "vpc_id" {
 }
 
 variable "availability_zones" {
-  type        = "list"
   description = "The azs to use"
 }
 
 variable "security_groups_ids" {
-  type        = "list"
   description = "The SGs to use"
 }
 
 variable "subnets_ids" {
-  type        = "list"
   description = "The private subnets to use"
 }
 
 variable "public_subnet_ids" {
-  type        = "list"
   description = "The private subnets to use"
 }
 
 variable "repository_name" {
   description = "repository name"
-  default = "372431383879.dkr.ecr.us-east-1.amazonaws.com/fast-food:latest"
+  default = "fast-food-app"
 }
 
 variable "database_endpoint" {

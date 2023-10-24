@@ -102,9 +102,11 @@ resource "aws_security_group" "web_inbound_sg" {
 }
 
 resource "aws_alb" "alb_fast_food_app" {
-  name            = "${var.environment}-alb-fast_food_app"
-  subnets         = [var.public_subnet_ids]
-  security_groups = [var.security_groups_ids, aws_security_group.web_inbound_sg.id]
+  name            = "${var.environment}-alb-fast-food-app"
+  subnets         = var.public_subnet_ids
+  security_groups = concat(tolist(var.security_groups_ids),
+    tolist([aws_security_group.web_inbound_sg.id])
+  )
 
   tags = {
     Name        = "${var.environment}-alb-fast_food_app"
@@ -116,7 +118,7 @@ resource "aws_alb_listener" "fast_food_app" {
   load_balancer_arn = aws_alb.alb_fast_food_app.arn
   port              = "80"
   protocol          = "HTTP"
-  depends_on        = ["aws_alb_target_group.alb_target_group"]
+  depends_on        = [aws_alb_target_group.alb_target_group]
 
   default_action {
     target_group_arn = aws_alb_target_group.alb_target_group.arn
@@ -209,7 +211,7 @@ resource "aws_security_group" "ecs_service" {
 /* Simply specify the family to find the latest ACTIVE revision in that family */
 data "aws_ecs_task_definition" "web" {
   task_definition = aws_ecs_task_definition.web.family
-  depends_on = [ "aws_ecs_task_definition.web" ]
+  depends_on = [ aws_ecs_task_definition.web ]
 }
 
 resource "aws_ecs_service" "web" {
@@ -220,8 +222,10 @@ resource "aws_ecs_service" "web" {
   cluster =       aws_ecs_cluster.cluster.id
 
   network_configuration {
-    security_groups = [var.security_groups_ids, aws_security_group.ecs_service.id]
-    subnets         = [var.subnets_ids]
+    security_groups = concat(tolist(var.security_groups_ids),
+      tolist([aws_security_group.web_inbound_sg.id])
+    )
+    subnets         = var.subnets_ids
   }
 
   load_balancer {
@@ -230,7 +234,7 @@ resource "aws_ecs_service" "web" {
     container_port   = "80"
   }
 
-  depends_on = ["aws_alb_target_group.alb_target_group", "aws_iam_role_policy.ecs_service_role_policy"]
+  depends_on = [aws_alb_target_group.alb_target_group, aws_iam_role_policy.ecs_service_role_policy]
 }
 
 
@@ -275,7 +279,7 @@ resource "aws_appautoscaling_policy" "up" {
     }
   }
 
-  depends_on = ["aws_appautoscaling_target.target"]
+  depends_on = [aws_appautoscaling_target.target]
 }
 
 resource "aws_appautoscaling_policy" "down" {
@@ -295,7 +299,7 @@ resource "aws_appautoscaling_policy" "down" {
     }
   }
 
-  depends_on = ["aws_appautoscaling_target.target"]
+  depends_on = [aws_appautoscaling_target.target]
 }
 
 /* metric used for auto scale */
@@ -314,6 +318,6 @@ resource "aws_cloudwatch_metric_alarm" "service_cpu_high" {
     ServiceName = aws_ecs_service.web.name
   }
 
-  alarm_actions = aws_appautoscaling_policy.up.arn
-  ok_actions    = aws_appautoscaling_policy.down.arn
+  alarm_actions = [aws_appautoscaling_policy.up.arn]
+  ok_actions    = [aws_appautoscaling_policy.down.arn]
 }
