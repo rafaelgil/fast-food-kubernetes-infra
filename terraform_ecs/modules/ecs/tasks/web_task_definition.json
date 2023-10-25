@@ -20,15 +20,15 @@
     },
     "environment": [
       {
-        "name": "DATABASE_URL",
+        "name": "POSTGRES_URL",
         "value": "${database_url}"
       },
       {
-        "name": "DATABASE_URL",
-        "value": "${database_user}"
+        "name": "POSTGRES_USER",
+        "value": "${database_username}"
       },
       {
-        "name": "DATABASE_PASSWORD",
+        "name": "POSTGRES_PASSWORD",
         "value": "${database_password}"
       }
     ]
